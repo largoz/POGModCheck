@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1 (2026-11-19)
+
+- The store page: the section for mod developers is about any mod (one line says how much it matters to the other
+  players); POGContentLib is one line at its end. The 0.1.0 changelog has its date instead of "not released".
+- The mod itself is the same as 0.1.0.
+
 ## 0.1.0 (2026-11-19)
 
 - The check before loading: a player whose mods differ from the host's where it matters sees the game's popup in

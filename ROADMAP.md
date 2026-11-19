@@ -1,6 +1,6 @@
 # POG Mod Check: roadmap
 
-State on 2026-11-19: 0.1.0, on Thunderstore. Run 16 added the check before loading, run 19 the table and the "same version" kind (below). Shown over LAN (PC host, laptop client, run 15 in
+State on 2026-11-19: 0.1.1, on Thunderstore. Run 16 added the check before loading, run 19 the table and the "same version" kind (below). Shown over LAN (PC host, laptop client, run 15 in
 `/run/media/tim/Games/pog-runs/lan-1/run15`): a client without a required mod, a client without POG Mod Check, and a
 client with everything; F10 closes the window. The full record is P7 in POGContentLib's `ROADMAP.md`.
 
@@ -64,5 +64,5 @@ client with everything; F10 closes the window. The full record is P7 in POGConte
 `icon.png` (1024x1024, made by the user); the publish script (`_Modding/tools/ThunderStoreCLI.py`) packs it at
 256x256 by itself.
 
-- The package's changelog tab still says "0.1.0 (not released)": the line was fixed in the repo after the upload, and a
-  published version cannot change. The next version carries the right one.
+- 0.1.1 (2026-11-19): the store page's developer section about any mod (POGContentLib one line at its end) and the
+  changelog dated. The code is 0.1.0's: the decompiled DLLs differ only in the version strings.

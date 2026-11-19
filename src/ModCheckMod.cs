@@ -42,7 +42,7 @@ namespace POGMods.ModCheck
     /// </summary>
     public sealed class ModCheckMod : MelonMod
     {
-        public const string VERSION = "0.1.0";
+        public const string VERSION = "0.1.1";
         private const string MessageName = "POGModCheck/List";
         private const float NoAnswerAfter = 15f;
         private const float WatchEvery = 1f;

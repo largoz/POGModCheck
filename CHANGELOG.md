@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 (not released)
+## 0.1.0 (2026-11-19)
 
 - The check before loading: a player whose mods differ from the host's where it matters sees the game's popup in
   the main menu and chooses Join or Cancel; nothing loads until it chooses. Setting `AskBeforeJoin`.

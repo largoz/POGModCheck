@@ -29,23 +29,21 @@ game goes on as before and the log says the other side did not answer.
 
 Every mod is one of three kinds:
 
-- **Required for everyone**: every player needs it, the same version. A mod is so when it adds network content
-  (items, shop slots) through [POGContentLib](https://github.com/largoz/POGContentLib) (found by itself: such a
-  mod's objects simply do not appear for a player without it), when its author marks it so, or when you name it in
-  the config.
+- **Required for everyone**: every player needs it, the same version. A mod is so when its author marks it so, or
+  when you name it in the config.
 - **Same version**: nobody has to have it, but two players who both have it need the same version. POG Timer is one:
   the host sends its timer to the others. A mod is so when its author marks it so, or when you name it in the config.
 - **Own only**: everything else (graphics, fonts, brightness): what one player runs is nobody else's business, and it
   is never shown.
 
-The log says which of your mods count and why.
+A mod that says nothing is own only. The log says which of your mods count and why.
 
 ## For mod developers
 
-**Why.** POG Mod Check cannot tell by itself whether your mod matters to the other players. It finds the mods that
-add items or shop slots through POGContentLib; every other mod counts as "own only" and is never compared. If your
-mod sends anything to the other players, or needs them to have it, say so with one line, and players with a different
-copy will see it in the popup above before they load in, instead of wondering later why something is broken.
+**Why.** POG Mod Check cannot tell by itself whether your mod matters to the other players, so a mod that says
+nothing counts as "own only" and is never compared. If your mod sends anything to the other players, or needs them to
+have it, say so with one line: players with a different copy then see it in the popup above before they load in,
+instead of wondering later why something is broken.
 
 **What to do.** Pick the line that fits your mod, paste it into any `.cs` file of your mod, outside a `namespace`
 (next to your `[assembly: MelonInfo(...)]` is a good place), and rebuild. That is all.
@@ -80,7 +78,6 @@ A real one, from [POG Timer](https://github.com/largoz/POGTimer/blob/main/src/Ti
   attribute. Players without POG Mod Check notice nothing.
 - The version compared is the one in your `MelonInfo`. A rebuild without a version bump shows as "another build"
   (the start of each DLL's hash beside the version).
-- A mod that adds items or shop slots through POGContentLib is "required" already; it needs no line.
 
 **Check it.** Start the game with POG Mod Check and find your mod in the MelonLoader console (or
 `MelonLoader/Latest.log`):
@@ -94,6 +91,9 @@ The first line is for `same-version`, the second for `required`. A misspelled va
 as no line at all.
 
 **Players can do it too**, for a mod whose author has not: the `Required` and `SameVersion` settings below.
+
+(One exception needs no line: a mod that adds items or shop slots through the
+[POGContentLib](https://github.com/largoz/POGContentLib) library is found by itself and counts as required.)
 
 ## Settings
 

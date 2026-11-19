@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>POGMods.ModCheck</RootNamespace>
+    <AssemblyName>POGModCheck</AssemblyName>
+    <!-- The folder holding MelonLoader\ (with Il2CppAssemblies\): the game folder or a mod manager profile.
+         Defaults to the Gale profile; override with -p:GameDir=... -->
+    <GameDir Condition="'$(GameDir)' == ''">$(HOME)/.local/share/com.kesomannen.gale/pit-of-goblin/profiles/Default</GameDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="tests/**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MelonLoader"><HintPath>$(GameDir)\MelonLoader\net6\MelonLoader.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2CppInterop.Runtime"><HintPath>$(GameDir)\MelonLoader\net6\Il2CppInterop.Runtime.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2Cppmscorlib"><HintPath>$(GameDir)\MelonLoader\Il2CppAssemblies\Il2Cppmscorlib.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(GameDir)\MelonLoader\Il2CppAssemblies\UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.IMGUIModule"><HintPath>$(GameDir)\MelonLoader\Il2CppAssemblies\UnityEngine.IMGUIModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.TextRenderingModule"><HintPath>$(GameDir)\MelonLoader\Il2CppAssemblies\UnityEngine.TextRenderingModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.InputLegacyModule"><HintPath>$(GameDir)\MelonLoader\Il2CppAssemblies\UnityEngine.InputLegacyModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Unity.Netcode.Runtime"><HintPath>$(GameDir)\MelonLoader\Il2CppAssemblies\Unity.Netcode.Runtime.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Unity.Collections"><HintPath>$(GameDir)\MelonLoader\Il2CppAssemblies\Unity.Collections.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>

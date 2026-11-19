@@ -1,0 +1,9 @@
+{
+  "name": "POG_Mod_Check",
+  "version_number": "0.1.0",
+  "website_url": "https://github.com/largoz/POGModCheck",
+  "description": "When someone joins, host and player compare mods. A window lists the ones every player needs but someone lacks or has in another version.",
+  "dependencies": [
+    "LavaGang-MelonLoader-0.7.2"
+  ]
+}

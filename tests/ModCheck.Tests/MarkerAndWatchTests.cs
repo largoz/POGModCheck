@@ -46,6 +46,24 @@ public class ModMarkerTests
         Assert.Null(unknown);
     }
 
+    [Theory]
+    [InlineData("same-version")]
+    [InlineData(" Same Version ")]
+    [InlineData("SAMEVERSION")]
+    public void SameVersionIsKnownInAnySpelling(string value)
+    {
+        Assert.Equal(ModMarker.Mark.SameVersion, ModMarker.Interpret(new[] { P("POGModCheck", value) }, out var unknown));
+        Assert.Null(unknown);
+    }
+
+    [Fact]
+    public void RequiredWinsOverSameVersionWhichWinsOverAnotherValue()
+    {
+        Assert.Equal(ModMarker.Mark.Required, ModMarker.Interpret(new[] { P("POGModCheck", "same-version"), P("POGModCheck", "required") }, out _));
+        Assert.Equal(ModMarker.Mark.SameVersion, ModMarker.Interpret(new[] { P("POGModCheck", "maybe"), P("POGModCheck", "same-version") }, out var unknown));
+        Assert.Null(unknown);
+    }
+
     [Fact]
     public void OtherKeysAreIgnored()
     {

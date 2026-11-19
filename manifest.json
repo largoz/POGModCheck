@@ -1,6 +1,6 @@
 {
   "name": "POG_Mod_Check",
-  "version_number": "0.1.0",
+  "version_number": "0.1.1",
   "website_url": "https://github.com/largoz/POGModCheck",
   "description": "Before you load into a game, your mods are compared with the host's. A popup shows what differs, the host's version beside yours, and lets you join or cancel.",
   "dependencies": [

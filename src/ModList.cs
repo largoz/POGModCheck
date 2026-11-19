@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace POGMods.ModCheck
@@ -133,6 +134,111 @@ namespace POGMods.ModCheck
             foreach (var m in mods ?? Enumerable.Empty<ModEntry>())
                 if (m != null && m.Key.Length > 0 && !d.ContainsKey(m.Key)) d[m.Key] = m;
             return d;
+        }
+    }
+
+    /// <summary>
+    /// A mod's own word that every player needs it, given with a standard .NET attribute, so the mod needs no
+    /// reference to POG Mod Check and runs the same without it:
+    /// <c>[assembly: System.Reflection.AssemblyMetadata("POGModCheck", "required")]</c>.
+    /// </summary>
+    public static class ModMarker
+    {
+        public const string Key = "POGModCheck";
+        public const string RequiredValue = "required";
+
+        public enum Mark
+        {
+            /// <summary>The mod says nothing: own only, unless something else makes it required.</summary>
+            None,
+            Required,
+            /// <summary>The key is there with a value this version does not know; treated as <see cref="None"/>.</summary>
+            Unknown,
+        }
+
+        /// <summary>What a mod's metadata pairs say. Key and value ignore case and surrounding spaces; "required"
+        /// anywhere wins; another value under the key is <see cref="Mark.Unknown"/>, given back in
+        /// <paramref name="unknownValue"/>.</summary>
+        public static Mark Interpret(IEnumerable<KeyValuePair<string, string>> metadata, out string unknownValue)
+        {
+            unknownValue = null;
+            var mark = Mark.None;
+            foreach (var kv in metadata ?? Enumerable.Empty<KeyValuePair<string, string>>())
+            {
+                if (!string.Equals(kv.Key?.Trim(), Key, StringComparison.OrdinalIgnoreCase)) continue;
+                string value = kv.Value?.Trim() ?? "";
+                if (string.Equals(value, RequiredValue, StringComparison.OrdinalIgnoreCase)) { unknownValue = null; return Mark.Required; }
+                mark = Mark.Unknown;
+                unknownValue ??= value;
+            }
+            return mark;
+        }
+
+        /// <summary>The mark an assembly carries. Reads the attribute data without building the attributes, and skips
+        /// any attribute whose type does not load, so a mod with a missing dependency cannot break the reading.</summary>
+        public static Mark Read(Assembly asm, out string unknownValue) => Interpret(MetadataOf(asm), out unknownValue);
+
+        private static List<KeyValuePair<string, string>> MetadataOf(Assembly asm)
+        {
+            var pairs = new List<KeyValuePair<string, string>>();
+            if (asm == null) return pairs;
+            IList<CustomAttributeData> attributes;
+            try { attributes = asm.GetCustomAttributesData(); }
+            catch { return pairs; }
+            string metadataType = typeof(AssemblyMetadataAttribute).FullName;
+            foreach (var a in attributes)
+            {
+                try
+                {
+                    if (a.AttributeType.FullName != metadataType) continue;
+                    var args = a.ConstructorArguments;
+                    if (args.Count == 2) pairs.Add(new KeyValuePair<string, string>(args[0].Value as string, args[1].Value as string));
+                }
+                catch { /* an attribute whose type does not load: not this one */ }
+            }
+            return pairs;
+        }
+    }
+
+    /// <summary>
+    /// The host's view of who has sent a mod list. A player that joined and sent none within the wait has no POG Mod
+    /// Check (or one too old to speak this format); each such player is named once. Times are seconds on any clock
+    /// that only goes forward.
+    /// </summary>
+    public sealed class PeerWatch
+    {
+        private readonly ulong _self;
+        private readonly float _wait;
+        private readonly Dictionary<ulong, float> _joinedAt = new Dictionary<ulong, float>();
+        private readonly HashSet<ulong> _answered = new HashSet<ulong>();
+        private readonly HashSet<ulong> _named = new HashSet<ulong>();
+
+        /// <param name="self">The host's own id, never watched.</param>
+        /// <param name="wait">Seconds a joined player has to send its list.</param>
+        public PeerWatch(ulong self, float wait) { _self = self; _wait = wait; }
+
+        /// <summary>The players connected now. A new one starts its wait; one that left is no longer waited for.</summary>
+        public void Present(IEnumerable<ulong> ids, float now)
+        {
+            var present = new HashSet<ulong>(ids ?? Enumerable.Empty<ulong>());
+            present.Remove(_self);
+            foreach (var id in present)
+                if (!_joinedAt.ContainsKey(id)) _joinedAt[id] = now;
+            foreach (var id in _joinedAt.Keys.Where(k => !present.Contains(k)).ToList()) _joinedAt.Remove(id);
+        }
+
+        /// <summary>A list came from this player (it may come before the player shows in <see cref="Present"/>).</summary>
+        public void Answered(ulong id) => _answered.Add(id);
+
+        /// <summary>Players still connected that waited longer than the wait with no list; each one only once.</summary>
+        public List<ulong> Overdue(float now)
+        {
+            var due = new List<ulong>();
+            foreach (var kv in _joinedAt)
+                if (!_answered.Contains(kv.Key) && !_named.Contains(kv.Key) && now - kv.Value > _wait) due.Add(kv.Key);
+            foreach (var id in due) _named.Add(id);
+            due.Sort();
+            return due;
         }
     }
 }

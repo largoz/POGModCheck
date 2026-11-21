@@ -35,7 +35,7 @@ namespace POGMods.ModCheck
     /// the player swap their whole mod lists over an NGO named message; differences open a window that does not stop
     /// the game (F10 or its button closes it), and a side that hears nothing within <see cref="NoAnswerAfter"/> says
     /// the other has no POG Mod Check. A mod is "required for everyone" when it adds network content through
-    /// POGContentLib (<c>Content.ContentAssemblies</c>), when its author marks it (<see cref="ModMarker"/>), or when
+    /// POGLib (<c>Content.ContentAssemblies</c>), when its author marks it (<see cref="ModMarker"/>), or when
     /// the config lists it; "same version" (nobody has to have it, whoever has it needs the same copy) when its
     /// author or the config says so; any other mod is "own only" and never reported. Every report also goes to the
     /// log.
@@ -95,7 +95,7 @@ namespace POGMods.ModCheck
         {
             var cat = MelonPreferences.CreateCategory("POGModCheck");
             _requiredCfg = cat.CreateEntry("Required", "",
-                description: "Mods every player must have, besides those found by themselves (network content through POGContentLib, or marked by their authors). Names as in the MelonLoader console, comma-separated.");
+                description: "Mods every player must have, besides those found by themselves (network content through POGLib, or marked by their authors). Names as in the MelonLoader console, comma-separated.");
             _sameVersionCfg = cat.CreateEntry("SameVersion", "",
                 description: "Mods nobody has to have, but whoever has them must run the same version as the other side (besides those marked so by their authors). Names as in the MelonLoader console, comma-separated.");
             _showWindow = cat.CreateEntry("ShowWindow", true, description: "Show the window when mods differ (the log always gets the report).");
@@ -450,7 +450,7 @@ namespace POGMods.ModCheck
         }
 
         // The interop shows ConnectedClientsIds as an interface without Count; the object behind it is a List
-        // (as POGContentLib's shop tools read it).
+        // (as POGLib's shop tools read it).
         private List<ulong> ConnectedIds(NetworkManager nm)
         {
             var list = nm.ConnectedClientsIds?.TryCast<Il2CppSystem.Collections.Generic.List<ulong>>();
@@ -576,7 +576,7 @@ namespace POGMods.ModCheck
                 bool Listed(HashSet<string> names) => names.Contains(ModEntry.KeyOf(melon.Info.Name)) || names.Contains(ModEntry.KeyOf(asmName));
                 string reason;
                 var need = ModNeed.Required;
-                if (contentAssemblies.Contains(asmName)) reason = "network content through POGContentLib";
+                if (contentAssemblies.Contains(asmName)) reason = "network content through POGLib";
                 else if (mark == ModMarker.Mark.Required) reason = "its author marks it";
                 else if (Listed(required)) reason = "your config";
                 else
@@ -599,7 +599,7 @@ namespace POGMods.ModCheck
             new HashSet<string>((csv ?? "").Split(',').Select(ModEntry.KeyOf).Where(k => k.Length > 0));
 
         /// <summary>
-        /// Assemblies that registered network content through POGContentLib. Read by reflection, so the mod runs
+        /// Assemblies that registered network content through POGLib. Read by reflection, so the mod runs
         /// without the library; an older library without the list answers through its content ids.
         /// </summary>
         private HashSet<string> ContentAssemblies()
@@ -607,8 +607,8 @@ namespace POGMods.ModCheck
             var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             try
             {
-                var lib = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == "POGContentLib");
-                var content = lib?.GetType("POGContentLib.Items.Content");
+                var lib = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == "POGLib");
+                var content = lib?.GetType("POGLib.Items.Content");
                 if (content == null) return set;
                 if (content.GetProperty("ContentAssemblies", BindingFlags.Public | BindingFlags.Static)?.GetValue(null) is IEnumerable<string> names)
                 {
@@ -626,7 +626,7 @@ namespace POGMods.ModCheck
                         var full = e?.GetType().GetProperty("FullId")?.GetValue(e) as string;
                         if (!string.IsNullOrEmpty(full)) modKeys.Add(ModEntry.KeyOf(full.Split(':')[0]));
                     }
-                    if (modKeys.Count > 0) set.Add("POGContentLib");
+                    if (modKeys.Count > 0) set.Add("POGLib");
                     foreach (MelonBase melon in MelonMod.RegisteredMelons)
                     {
                         string asmName = melon.MelonAssembly?.Assembly?.GetName().Name ?? "";
@@ -634,7 +634,7 @@ namespace POGMods.ModCheck
                     }
                 }
             }
-            catch (Exception ex) { LoggerInstance.Warning($"Reading POGContentLib's content list: {ex.Message}"); }
+            catch (Exception ex) { LoggerInstance.Warning($"Reading POGLib's content list: {ex.Message}"); }
             return set;
         }
 

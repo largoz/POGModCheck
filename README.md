@@ -93,7 +93,7 @@ as no line at all.
 **Players can do it too**, for a mod whose author has not: the `Required` and `SameVersion` settings below.
 
 (One exception needs no line: a mod that adds items or shop slots through the
-[POGContentLib](https://github.com/largoz/POGContentLib) library is found by itself and counts as required.)
+[POGLib](https://github.com/largoz/POGLib) library is found by itself and counts as required.)
 
 ## Settings
 
